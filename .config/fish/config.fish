@@ -21,6 +21,8 @@ set -g theme_hostname always
 
 # aliases
 alias vim nvim
+alias ls "exa -S --icons"
+alias ll "exa -S -l --icons"
 alias dev "bash ~/.config/tmux/script/ide.sh"
 
 #alias fp "cat /etc/services | fzf"
