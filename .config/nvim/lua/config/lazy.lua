@@ -14,6 +14,29 @@ require("lazy").setup({
 	spec = {
 		-- add LazyVim and import its plugins
 		-- amongst your other plugins
+		--
+		{
+			"zbirenbaum/copilot.lua",
+			cmd = "Copilot",
+			build = ":Copilot auth",
+			event = "InsertEnter",
+			opts = {
+				suggestion = {
+					enabled = not vim.g.ai_cmp,
+					auto_trigger = true,
+					keymap = {
+						accept = false, -- handled by nvim-cmp / blink.cmp
+						next = "<M-]>",
+						prev = "<M-[>",
+					},
+				},
+				panel = { enabled = false },
+				filetypes = {
+					markdown = true,
+					help = true,
+				},
+			},
+		},
 		{
 			"akinsho/toggleterm.nvim",
 			version = "*",
@@ -33,7 +56,7 @@ require("lazy").setup({
 		{ import = "lazyvim.plugins.extras.lang.json" },
 		{ import = "lazyvim.plugins.extras.lang.rust" },
 		{ import = "lazyvim.plugins.extras.lang.tailwind" },
-		{ import = "lazyvim.plugins.extras.coding.copilot" },
+		-- { import = "lazyvim.plugins.extras.coding.copilot" },
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },
 		-- import/override with your plugins
 		{ import = "plugins" },
