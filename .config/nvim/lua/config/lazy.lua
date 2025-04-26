@@ -1,52 +1,28 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-
-vim.o.mouse = "a"
-
 if not vim.loop.fs_stat(lazypath) then
-  -- bootstrap lazy.nvim
-  -- stylua: ignore
-  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
-    lazypath })
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	spec = {
 		-- add LazyVim and import its plugins
-		-- amongst your other plugins
-		--
-		{
-			"zbirenbaum/copilot.lua",
-			cmd = "Copilot",
-			build = ":Copilot auth",
-			event = "InsertEnter",
-			opts = {
-				suggestion = {
-					enabled = not vim.g.ai_cmp,
-					auto_trigger = true,
-					keymap = {
-						accept = false, -- handled by nvim-cmp / blink.cmp
-						next = "<M-]>",
-						prev = "<M-[>",
-					},
-				},
-				panel = { enabled = false },
-				filetypes = {
-					markdown = true,
-					help = true,
-				},
-			},
-		},
-		{
-			"akinsho/toggleterm.nvim",
-			version = "*",
-			config = true,
-		},
 		{
 			"LazyVim/LazyVim",
 			import = "lazyvim.plugins",
 			opts = {
 				colorscheme = "solarized-osaka",
+				news = {
+					lazyvim = true,
+					neovim = true,
+				},
 			},
 		},
 		-- import any extras modules here
@@ -54,11 +30,16 @@ require("lazy").setup({
 		{ import = "lazyvim.plugins.extras.formatting.prettier" },
 		{ import = "lazyvim.plugins.extras.lang.typescript" },
 		{ import = "lazyvim.plugins.extras.lang.json" },
+		{ import = "lazyvim.plugins.extras.lang.markdown" },
 		{ import = "lazyvim.plugins.extras.lang.rust" },
 		{ import = "lazyvim.plugins.extras.lang.tailwind" },
-		-- { import = "lazyvim.plugins.extras.coding.copilot" },
+		-- { import = "lazyvim.plugins.extras.dap.core" },
+		-- { import = "lazyvim.plugins.extras.vscode" },
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },
-		-- import/override with your plugins
+		-- { import = "lazyvim.plugins.extras.test.core" },
+		-- { import = "lazyvim.plugins.extras.coding.yanky" },
+		-- { import = "lazyvim.plugins.extras.editor.mini-files" },
+		-- { import = "lazyvim.plugins.extras.util.project" },
 		{ import = "plugins" },
 	},
 	defaults = {
@@ -86,6 +67,7 @@ require("lazy").setup({
 				-- "matchit",
 				-- "matchparen",
 				"netrwPlugin",
+				"rplugin",
 				"tarPlugin",
 				"tohtml",
 				"tutor",
@@ -100,4 +82,5 @@ require("lazy").setup({
 			end,
 		},
 	},
+	debug = false,
 })

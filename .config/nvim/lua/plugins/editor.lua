@@ -34,29 +34,7 @@ return {
 			},
 		},
 	},
-	{
-		"rest-nvim/rest.nvim",
-	},
-	{
-		"saghen/blink.cmp",
-		dependencies = "rafamadriz/friendly-snippets",
 
-		version = "*",
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
-		opts = {
-			keymap = { preset = "default" },
-			appearance = {
-				use_nvim_cmp_as_default = true,
-				nerd_font_variant = "mono",
-			},
-
-			sources = {
-				default = { "lsp", "path", "snippets", "buffer" },
-			},
-		},
-		opts_extend = { "sources.default" },
-	},
 	{
 		"dinhhuy258/git.nvim",
 		event = "BufReadPre",
@@ -94,6 +72,7 @@ return {
 				function()
 					local builtin = require("telescope.builtin")
 					builtin.find_files({
+						additional_args = { "--hidden" },
 						no_ignore = false,
 						hidden = true,
 					})
@@ -106,6 +85,8 @@ return {
 					local builtin = require("telescope.builtin")
 					builtin.live_grep({
 						additional_args = { "--hidden" },
+						no_ignore = false,
+						hidden = true,
 					})
 				end,
 				desc = "Search for a string in your current working directory and get results live as you type, respects .gitignore",
@@ -149,6 +130,14 @@ return {
 					builtin.treesitter()
 				end,
 				desc = "Lists Function names, variables, from Treesitter",
+			},
+			{
+				";c",
+				function()
+					local builtin = require("telescope.builtin")
+					builtin.lsp_incoming_calls()
+				end,
+				desc = "Lists LSP incoming calls for word under the cursor",
 			},
 			{
 				"sf",
@@ -230,6 +219,115 @@ return {
 			telescope.setup(opts)
 			require("telescope").load_extension("fzf")
 			require("telescope").load_extension("file_browser")
+		end,
+	},
+
+	{
+		"kazhala/close-buffers.nvim",
+		event = "VeryLazy",
+		keys = {
+			{
+				"<leader>th",
+				function()
+					require("close_buffers").delete({ type = "hidden" })
+				end,
+				"Close Hidden Buffers",
+			},
+			{
+				"<leader>tu",
+				function()
+					require("close_buffers").delete({ type = "nameless" })
+				end,
+				"Close Nameless Buffers",
+			},
+		},
+	},
+	{
+		"vyfor/cord.nvim",
+		build = ":Cord update",
+		opts = {
+			display = {
+				theme = "catppuccin",
+				flavor = "accent",
+			},
+			text = {
+				workspace = function(opts)
+					local hour = tonumber(os.date("%H"))
+					local status = hour >= 22 and "🌙 Late night coding"
+						or hour >= 18 and "🌆 Evening session"
+						or hour >= 12 and "☀️ Afternoon coding"
+						or hour >= 5 and "🌅 Morning productivity"
+						or "🌙 Midnight Coding"
+					return string.format("%s: %s", status, opts.filename)
+				end,
+			},
+			buttons = {
+				{
+					label = function(opts)
+						return opts.repo_url and "View Repository" or "學弟好強"
+					end,
+					url = function(opts)
+						return opts.repo_url or "https://osga.dev"
+					end,
+				},
+			},
+		},
+	},
+	{
+		"saghen/blink.cmp",
+		opts = {
+			completion = {
+				menu = {
+					winblend = vim.o.pumblend,
+				},
+			},
+			signature = {
+				window = {
+					winblend = vim.o.pumblend,
+				},
+			},
+		},
+	},
+	{
+		"mikavilpas/yazi.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			-- check the installation instructions at
+			-- https://github.com/folke/snacks.nvim
+			"folke/snacks.nvim",
+		},
+		keys = {
+			-- 👇 in this section, choose your own keymappings!
+			{
+				"<leader>-",
+				mode = { "n", "v" },
+				"<cmd>Yazi<cr>",
+				desc = "Open yazi at the current file",
+			},
+			{
+				-- Open in the current working directory
+				"<leader>cw",
+				"<cmd>Yazi cwd<cr>",
+				desc = "Open the file manager in nvim's working directory",
+			},
+			{
+				"<c-up>",
+				"<cmd>Yazi toggle<cr>",
+				desc = "Resume the last yazi session",
+			},
+		},
+		opts = {
+			-- if you want to open yazi instead of netrw, see below for more info
+			open_for_directories = false,
+			keymaps = {
+				show_help = "<f1>",
+			},
+		},
+		-- 👇 if you use `open_for_directories=true`, this is recommended
+		init = function()
+			-- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
+			-- vim.g.loaded_netrw = 1
+			vim.g.loaded_netrwPlugin = 1
 		end,
 	},
 }
