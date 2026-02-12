@@ -1,9 +1,5 @@
 # Dev Dotfiles
 
-#### My Neovim screenshot
-
-![image](./.images/screenshot.png)
-
 ## Contents
 
 - [fish config](./.config/fish/)
@@ -13,13 +9,15 @@
 
 ## Neovim setup
 
-- [Lazyvim](https://github.com/LazyVim/LazyVim)
-- [Solarized Osaka (theme)](https://github.com/craftzdog/solarized-osaka.nvim)
-- [Dashboard-nvim](https://github.com/glepnir/dashboard-nvim)
-- [toggleterm-nvim](https://github.com/akinsho/toggleterm.nvim)
-- [Nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua)
+- [Packer](https://github.com/wbthomason/packer.nvim) - Plugin manager
+- [Tokyo Night](https://github.com/folke/tokyonight.nvim) - Color scheme
+- [Yazi](https://github.com/mikavilpas/yazi.nvim) - File manager
+- [Telescope](https://github.com/nvim-telescope/telescope.nvim) - Fuzzy finder
+- [LSP](https://github.com/neovim/nvim-lspconfig) - Language server protocol
+- [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Syntax highlighting
+- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) - Autocompletion
 
-## Shell setup (Linux)
+## Shell setup
 
 - [Kitty terminal](https://github.com/kovidgoyal/kitty) - A Linux terminal
 - ~~[colorls](https://github.com/athityakumar/colorls)~~ -- Change to Eza
@@ -32,6 +30,4 @@
 
 ## Reference sources
 
-- [craftzdog-solarized-osaka.nvim](https://github.com/craftzdog/solarized-osaka.nvim)
-- [craftzdog-dotfiles-public](https://github.com/craftzdog/dotfiles-public)
 - [gpakosz-.tmux](https://github.com/gpakosz/.tmux)

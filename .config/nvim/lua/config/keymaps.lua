@@ -1,75 +1,79 @@
--- local discipline = require("craftzdog.discipline")
--- discipline.cowboy()
-
 local keymap = vim.keymap
-local opts = { noremap = true, silent = true }
 
--- Do things without affecting the registers
-keymap.set("n", "x", '"_x')
-keymap.set("n", "<Leader>p", '"0p')
-keymap.set("n", "<Leader>P", '"0P')
-keymap.set("v", "<Leader>p", '"0p')
-keymap.set("n", "<Leader>c", '"_c')
-keymap.set("n", "<Leader>C", '"_C')
-keymap.set("v", "<Leader>c", '"_c')
-keymap.set("v", "<Leader>C", '"_C')
-keymap.set("n", "<Leader>d", '"_d')
-keymap.set("n", "<Leader>D", '"_D')
-keymap.set("v", "<Leader>d", '"_d')
-keymap.set("v", "<Leader>D", '"_D')
+-- Clear search highlights
+keymap.set('n', '<leader>nh', ':nohl<CR>', { desc = 'Clear search highlights' })
 
--- Increment/decrement
-keymap.set("n", "+", "<C-a>")
-keymap.set("n", "-", "<C-x>")
+-- Save and quit
+keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save file' })
+keymap.set('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
 
--- Delete a word backwards
-keymap.set("n", "dw", 'vb"_d')
+-- Split windows
+keymap.set('n', '<leader>sv', '<C-w>v', { desc = 'Split window vertically' })
+keymap.set('n', '<leader>sh', '<C-w>s', { desc = 'Split window horizontally' })
+keymap.set('n', '<leader>se', '<C-w>=', { desc = 'Make splits equal size' })
+keymap.set('n', '<leader>sx', '<cmd>close<CR>', { desc = 'Close current split' })
 
--- Select all
-keymap.set("n", "<C-a>", "gg<S-v>G")
+-- Window navigation
+keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Go to left window' })
+keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Go to lower window' })
+keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Go to upper window' })
+keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Go to right window' })
 
--- Save with root permission (not working for now)
--- vim.api.nvim_create_user_command("W", "w !sudo tee > /dev/null %", {})
+-- Window resize
+keymap.set('n', '<C-Up>', ':resize +2<CR>', { desc = 'Increase window height' })
+keymap.set('n', '<C-Down>', ':resize -2<CR>', { desc = 'Decrease window height' })
+keymap.set('n', '<C-Left>', ':vertical resize -2<CR>', { desc = 'Decrease window width' })
+keymap.set('n', '<C-Right>', ':vertical resize +2<CR>', { desc = 'Increase window width' })
 
--- Disable continuations
-keymap.set("n", "<Leader>o", "o<Esc>^Da", opts)
-keymap.set("n", "<Leader>O", "O<Esc>^Da", opts)
+-- Buffer management
+keymap.set('n', '<Tab>', ':bnext<CR>', { desc = 'Next buffer' })
+keymap.set('n', '<S-Tab>', ':bprevious<CR>', { desc = 'Previous buffer' })
+keymap.set('n', '<leader>x', ':bdelete<CR>', { desc = 'Close buffer' })
+keymap.set('n', '<leader>ba', ':%bd|e#|bd#<CR>', { desc = 'Close all buffers except current' })
 
--- Jumplist
-keymap.set("n", "<C-m>", "<C-i>", opts)
+-- Move selected lines
+keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move line down' })
+keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move line up' })
 
--- New tab
-keymap.set("n", "te", ":tabedit")
-keymap.set("n", "<tab>", ":tabnext<Return>", opts)
-keymap.set("n", "<s-tab>", ":tabprev<Return>", opts)
--- Split window
-keymap.set("n", "ss", ":split<Return>", opts)
-keymap.set("n", "sv", ":vsplit<Return>", opts)
--- Move window
-keymap.set("n", "sh", "<C-w>h")
-keymap.set("n", "sk", "<C-w>k")
-keymap.set("n", "sj", "<C-w>j")
-keymap.set("n", "sl", "<C-w>l")
+-- Keep visual mode after indenting
+keymap.set('v', '<', '<gv', { desc = 'Indent left' })
+keymap.set('v', '>', '>gv', { desc = 'Indent right' })
 
--- Resize window
-keymap.set("n", "<C-w><left>", "<C-w><")
-keymap.set("n", "<C-w><right>", "<C-w>>")
-keymap.set("n", "<C-w><up>", "<C-w>+")
-keymap.set("n", "<C-w><down>", "<C-w>-")
+-- ========== File Explorer ==========
+keymap.set('n', '<leader>e', '<cmd>Yazi<CR>', { desc = 'Open yazi at current file' })
+keymap.set('n', '<leader>E', '<cmd>Yazi cwd<CR>', { desc = 'Open yazi in working directory' })
 
---true Diagnostics
-keymap.set("n", "<C-j>", function()
-	vim.diagnostic.goto_next()
-end, opts)
+-- ========== Fuzzy Finder ==========
+keymap.set('n', '<leader>ff', '<cmd>FzfLua files<CR>', { desc = 'Find files' })
+keymap.set('n', '<leader>fg', '<cmd>FzfLua live_grep<CR>', { desc = 'Live grep' })
+keymap.set('n', '<leader>fb', '<cmd>FzfLua buffers<CR>', { desc = 'Find buffers' })
+keymap.set('n', '<leader>fh', '<cmd>FzfLua help_tags<CR>', { desc = 'Help tags' })
+keymap.set('n', '<leader>fo', '<cmd>FzfLua oldfiles<CR>', { desc = 'Recent files' })
+keymap.set('n', '<leader>fc', '<cmd>FzfLua commands<CR>', { desc = 'Commands' })
+keymap.set('n', '<leader>fk', '<cmd>FzfLua keymaps<CR>', { desc = 'Keymaps' })
+keymap.set('n', '<leader>fs', '<cmd>FzfLua git_status<CR>', { desc = 'Git status' })
+keymap.set('n', '<leader>fw', '<cmd>FzfLua grep_cword<CR>', { desc = 'Grep word under cursor' })
 
-keymap.set("n", "<leader>r", function()
-	require("craftzdog.hsl").replaceHexWithHSL()
-end)
+-- ========== Terminal (Floaterm) ==========
+keymap.set('n', '<leader>tt', '<cmd>FloatermToggle<CR>', { desc = 'Toggle floating terminal' })
+keymap.set('n', '<leader>tn', '<cmd>FloatermNew<CR>', { desc = 'New terminal' })
+keymap.set('n', '<leader>tp', '<cmd>FloatermPrev<CR>', { desc = 'Previous terminal' })
+keymap.set('n', '<leader>tj', '<cmd>FloatermNext<CR>', { desc = 'Next terminal' })
+keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
-keymap.set("n", "<leader>i", function()
-	require("craftzdog.lsp").toggleInlayHints()
-end)
+-- ========== Quick Jump (Hop) ==========
+keymap.set('n', '<leader>jw', '<cmd>HopWord<CR>', { desc = 'Jump to word' })
+keymap.set('n', '<leader>jl', '<cmd>HopLine<CR>', { desc = 'Jump to line' })
+keymap.set('n', '<leader>jc', '<cmd>HopChar1<CR>', { desc = 'Jump to char' })
+keymap.set('n', '<leader>jp', '<cmd>HopPattern<CR>', { desc = 'Jump to pattern' })
 
-vim.api.nvim_create_user_command("ToggleAutoformat", function()
-	require("craftzdog.lsp").toggleAutoformat()
-end, {})
+-- ========== Markdown Preview ==========
+keymap.set('n', '<leader>mkp', '<cmd>MarkdownPreview<CR>', { desc = 'Markdown preview' })
+keymap.set('n', '<leader>mks', '<cmd>MarkdownPreviewStop<CR>', { desc = 'Stop markdown preview' })
+keymap.set('n', '<leader>mkt', '<cmd>MarkdownPreviewToggle<CR>', { desc = 'Toggle markdown preview' })
+
+-- ========== Bufferline ==========
+keymap.set('n', '<leader>bp', ':BufferLinePick<CR>', { desc = 'Pick buffer' })
+keymap.set('n', '<leader>bc', ':BufferLinePickClose<CR>', { desc = 'Pick buffer to close' })
+keymap.set('n', '<leader>bl', ':BufferLineCloseLeft<CR>', { desc = 'Close all left buffers' })
+keymap.set('n', '<leader>br', ':BufferLineCloseRight<CR>', { desc = 'Close all right buffers' })

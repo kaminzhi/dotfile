@@ -1,333 +1,288 @@
-return {
-	{
-		enabled = false,
-		"folke/flash.nvim",
-		---@type Flash.Config
-		opts = {
-			search = {
-				forward = true,
-				multi_window = false,
-				wrap = false,
-				incremental = true,
-			},
-		},
-	},
+return function(use)
+  -- ========== Yazi File Manager ==========
+  use {
+    'mikavilpas/yazi.nvim',
+    requires = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('yazi').setup({
+        open_for_directories = false,
+        keymaps = {
+          show_help = '<f1>',
+        },
+      })
+    end
+  }
 
-	{
-		"echasnovski/mini.hipatterns",
-		event = "BufReadPre",
-		opts = {
-			highlighters = {
-				hsl_color = {
-					pattern = "hsl%(%d+,? %d+%%?,? %d+%%?%)",
-					group = function(_, match)
-						local utils = require("solarized-osaka.hsl")
-						--- @type string, string, string
-						local nh, ns, nl = match:match("hsl%((%d+),? (%d+)%%?,? (%d+)%%?%)")
-						--- @type number?, number?, number?
-						local h, s, l = tonumber(nh), tonumber(ns), tonumber(nl)
-						--- @type string
-						local hex_color = utils.hslToHex(h, s, l)
-						return MiniHipatterns.compute_hex_color_group(hex_color, "bg")
-					end,
-				},
-			},
-		},
-	},
+  -- ========== Discord ==========
+  use {
+    'kaminzhi/oxicord.nvim',
+    config = function()
+      require('oxicord').setup({
+        binary = "path/to/oxicord", -- path to oxicord
+        keys = "<leader>dc"    -- Keybind to open the floating terminal
+      })
+    end
+  }
 
-	{
-		"dinhhuy258/git.nvim",
-		event = "BufReadPre",
-		opts = {
-			keymaps = {
-				-- Open blame window
-				blame = "<Leader>gb",
-				-- Open file/folder in git repository
-				browse = "<Leader>go",
-			},
-		},
-	},
+  -- ========== Telescope Fuzzy Finder ==========
+  use {
+    "nvim-telescope/telescope.nvim",
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'nvim-tree/nvim-web-devicons',
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
+    },
+    config = function()
+      local telescope = require("telescope")
+      local lga_actions = require("telescope-live-grep-args.actions")
 
-	{
-		"nvim-telescope/telescope.nvim",
-		dependencies = {
-			{
-				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "make",
-			},
-			"nvim-telescope/telescope-file-browser.nvim",
-		},
-		keys = {
-			{
-				"<leader>fP",
-				function()
-					require("telescope.builtin").find_files({
-						cwd = require("lazy.core.config").options.root,
-					})
-				end,
-				desc = "Find Plugin File",
-			},
-			{
-				";f",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.find_files({
-						additional_args = { "--hidden" },
-						no_ignore = false,
-						hidden = true,
-					})
-				end,
-				desc = "Lists files in your current working directory, respects .gitignore",
-			},
-			{
-				";r",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.live_grep({
-						additional_args = { "--hidden" },
-						no_ignore = false,
-						hidden = true,
-					})
-				end,
-				desc = "Search for a string in your current working directory and get results live as you type, respects .gitignore",
-			},
-			{
-				"\\\\",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.buffers()
-				end,
-				desc = "Lists open buffers",
-			},
-			{
-				";t",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.help_tags()
-				end,
-				desc = "Lists available help tags and opens a new window with the relevant help info on <cr>",
-			},
-			{
-				";;",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.resume()
-				end,
-				desc = "Resume the previous telescope picker",
-			},
-			{
-				";e",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.diagnostics()
-				end,
-				desc = "Lists Diagnostics for all open buffers or a specific buffer",
-			},
-			{
-				";s",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.treesitter()
-				end,
-				desc = "Lists Function names, variables, from Treesitter",
-			},
-			{
-				";c",
-				function()
-					local builtin = require("telescope.builtin")
-					builtin.lsp_incoming_calls()
-				end,
-				desc = "Lists LSP incoming calls for word under the cursor",
-			},
-			{
-				"sf",
-				function()
-					local telescope = require("telescope")
+      telescope.setup({
+        defaults = {
+          selection_caret = "➤ ",
+          path_display = { "truncate" },
+          layout_config = {
+            horizontal = {
+              preview_width = 0.55,
+              results_width = 0.8,
+            },
+            vertical = {
+              mirror = false,
+            },
+            width = 0.87,
+            height = 0.80,
+            preview_cutoff = 120,
+          },
+        },
+        extensions = {
+          live_grep_args = {
+            auto_quoting = true,
+            mappings = {
+              i = {
+                ["<C-k>"] = lga_actions.quote_prompt(),
+                ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+              },
+            },
+          },
+        },
+      })
 
-					local function telescope_buffer_dir()
-						return vim.fn.expand("%:p:h")
-					end
+      telescope.load_extension("live_grep_args")
+    end
+  }
 
-					telescope.extensions.file_browser.file_browser({
-						path = "%:p:h",
-						cwd = telescope_buffer_dir(),
-						respect_gitignore = false,
-						hidden = true,
-						grouped = true,
-						previewer = false,
-						initial_mode = "normal",
-						layout_config = { height = 40 },
-					})
-				end,
-				desc = "Open File Browser with the path of the current buffer",
-			},
-		},
-		config = function(_, opts)
-			local telescope = require("telescope")
-			local actions = require("telescope.actions")
-			local fb_actions = require("telescope").extensions.file_browser.actions
+  -- ========== FZF Fuzzy Finder ==========
+  use {
+    'ibhagwan/fzf-lua',
+    requires = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('fzf-lua').setup({
+        winopts = {
+          height = 0.85,
+          width = 0.80,
+          row = 0.35,
+          col = 0.50,
+          border = 'rounded',
+          preview = {
+            border = 'border',
+            wrap = 'nowrap',
+            hidden = 'nohidden',
+            vertical = 'down:45%',
+            horizontal = 'right:60%',
+            layout = 'flex',
+            flip_columns = 120,
+          },
+        },
+        files = {
+          prompt = 'Files❯ ',
+          multiprocess = true,
+          git_icons = true,
+          file_icons = true,
+          color_icons = true,
+        },
+        grep = {
+          prompt = 'Rg❯ ',
+          input_prompt = 'Grep For❯ ',
+          multiprocess = true,
+          git_icons = true,
+          file_icons = true,
+          color_icons = true,
+        },
+      })
+    end
+  }
 
-			opts.defaults = vim.tbl_deep_extend("force", opts.defaults, {
-				wrap_results = true,
-				layout_strategy = "horizontal",
-				layout_config = { prompt_position = "top" },
-				sorting_strategy = "ascending",
-				winblend = 0,
-				mappings = {
-					n = {},
-				},
-			})
-			opts.pickers = {
-				diagnostics = {
-					theme = "ivy",
-					initial_mode = "normal",
-					layout_config = {
-						preview_cutoff = 9999,
-					},
-				},
-			}
-			opts.extensions = {
-				file_browser = {
-					theme = "dropdown",
-					-- disables netrw and use telescope-file-browser in its place
-					hijack_netrw = true,
-					mappings = {
-						-- your custom insert mode mappings
-						["n"] = {
-							-- your custom normal mode mappings
-							["N"] = fb_actions.create,
-							["h"] = fb_actions.goto_parent_dir,
-							["/"] = function()
-								vim.cmd("startinsert")
-							end,
-							["<C-u>"] = function(prompt_bufnr)
-								for i = 1, 10 do
-									actions.move_selection_previous(prompt_bufnr)
-								end
-							end,
-							["<C-d>"] = function(prompt_bufnr)
-								for i = 1, 10 do
-									actions.move_selection_next(prompt_bufnr)
-								end
-							end,
-							["<PageUp>"] = actions.preview_scrolling_up,
-							["<PageDown>"] = actions.preview_scrolling_down,
-						},
-					},
-				},
-			}
-			telescope.setup(opts)
-			require("telescope").load_extension("fzf")
-			require("telescope").load_extension("file_browser")
-		end,
-	},
+  -- ========== Markdown Preview ==========
+  use {
+    'iamcco/markdown-preview.nvim',
+    run = 'cd app && npm install',
+    setup = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { 'markdown' },
+    cmd = { 'MarkdownPreview', 'MarkdownPreviewStop', 'MarkdownPreviewToggle' },
+    config = function()
+      vim.g.mkdp_auto_start = 0
+      vim.g.mkdp_auto_close = 1
+      vim.g.mkdp_refresh_slow = 0
+      vim.g.mkdp_command_for_global = 0
+      vim.g.mkdp_open_to_the_world = 0
+      vim.g.mkdp_open_ip = ''
+      vim.g.mkdp_browser = ''
+      vim.g.mkdp_echo_preview_url = 0
+      vim.g.mkdp_browserfunc = ''
+      
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+          vim.keymap.set('n', '<leader>mp', '<cmd>MarkdownPreview<CR>', { buffer = true, desc = 'Markdown preview' })
+          vim.keymap.set('n', '<leader>ms', '<cmd>MarkdownPreviewStop<CR>', { buffer = true, desc = 'Stop markdown preview' })
+          vim.keymap.set('n', '<leader>mt', '<cmd>MarkdownPreviewToggle<CR>', { buffer = true, desc = 'Toggle markdown preview' })
+        end
+      })
+      vim.g.mkdp_preview_options = {
+        mkit = {},
+        katex = {},
+        uml = {},
+        maid = {},
+        disable_sync_scroll = 0,
+        sync_scroll_type = 'middle',
+        hide_yaml_meta = 1,
+        sequence_diagrams = {},
+        flowchart_diagrams = {},
+        content_editable = false,
+        disable_filename = 0,
+        toc = {}
+      }
+      vim.g.mkdp_markdown_css = ''
+      vim.g.mkdp_highlight_css = ''
+      vim.g.mkdp_port = ''
+      vim.g.mkdp_page_title = '「${name}」'
+      vim.g.mkdp_filetypes = {'markdown'}
+      vim.g.mkdp_theme = 'dark'
+    end
+  }
 
-	{
-		"kazhala/close-buffers.nvim",
-		event = "VeryLazy",
-		keys = {
-			{
-				"<leader>th",
-				function()
-					require("close_buffers").delete({ type = "hidden" })
-				end,
-				"Close Hidden Buffers",
-			},
-			{
-				"<leader>tu",
-				function()
-					require("close_buffers").delete({ type = "nameless" })
-				end,
-				"Close Nameless Buffers",
-			},
-		},
-	},
-	{
-		"vyfor/cord.nvim",
-		build = ":Cord update",
-		opts = {
-			display = {
-				theme = "catppuccin",
-				flavor = "accent",
-			},
-			text = {
-				workspace = function(opts)
-					local hour = tonumber(os.date("%H"))
-					local status = hour >= 22 and "🌙 Late night coding"
-						or hour >= 18 and "🌆 Evening session"
-						or hour >= 12 and "☀️ Afternoon coding"
-						or hour >= 5 and "🌅 Morning productivity"
-						or "🌙 Midnight Coding"
-					return string.format("%s: %s", status, opts.filename)
-				end,
-			},
-			buttons = {
-				{
-					label = function(opts)
-						return opts.repo_url and "View Repository" or "學弟好強"
-					end,
-					url = function(opts)
-						return opts.repo_url or "https://osga.dev"
-					end,
-				},
-			},
-		},
-	},
-	{
-		"saghen/blink.cmp",
-		opts = {
-			completion = {
-				menu = {
-					winblend = vim.o.pumblend,
-				},
-			},
-			signature = {
-				window = {
-					winblend = vim.o.pumblend,
-				},
-			},
-		},
-	},
-	{
-		"mikavilpas/yazi.nvim",
-		event = "VeryLazy",
-		dependencies = {
-			-- check the installation instructions at
-			-- https://github.com/folke/snacks.nvim
-			"folke/snacks.nvim",
-		},
-		keys = {
-			-- 👇 in this section, choose your own keymappings!
-			{
-				"<leader>-",
-				mode = { "n", "v" },
-				"<cmd>Yazi<cr>",
-				desc = "Open yazi at the current file",
-			},
-			{
-				-- Open in the current working directory
-				"<leader>cw",
-				"<cmd>Yazi cwd<cr>",
-				desc = "Open the file manager in nvim's working directory",
-			},
-			{
-				"<c-up>",
-				"<cmd>Yazi toggle<cr>",
-				desc = "Resume the last yazi session",
-			},
-		},
-		opts = {
-			-- if you want to open yazi instead of netrw, see below for more info
-			open_for_directories = false,
-			keymaps = {
-				show_help = "<f1>",
-			},
-		},
-		-- 👇 if you use `open_for_directories=true`, this is recommended
-		init = function()
-			-- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
-			-- vim.g.loaded_netrw = 1
-			vim.g.loaded_netrwPlugin = 1
-		end,
-	},
-}
+  -- ========== Comment (Comment toggler) ==========
+  use {
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup({
+        padding = true,
+        sticky = true,
+        ignore = nil,
+        toggler = {
+          line = 'gcc',
+          block = 'gbc',
+        },
+        opleader = {
+          line = 'gc',
+          block = 'gb',
+        },
+        extra = {
+          above = 'gcO',
+          below = 'gco',
+          eol = 'gcA',
+        },
+        mappings = {
+          basic = true,
+          extra = true,
+        },
+      })
+    end
+  }
+
+  -- ========== Autopairs (Auto close brackets) ==========
+  use {
+    'windwp/nvim-autopairs',
+    config = function()
+      require('nvim-autopairs').setup({
+        check_ts = true,
+        ts_config = {
+          lua = { 'string' },
+          javascript = { 'template_string' },
+        },
+        disable_filetype = { "TelescopePrompt", "vim" },
+        fast_wrap = {
+          map = '<M-e>',
+          chars = { '{', '[', '(', '"', "'" },
+          pattern = [=[[%'%"%)%>%]%)%}%,]]=],
+          end_key = '$',
+          keys = 'qwertyuiopzxcvbnmasdfghjkl',
+          check_comma = true,
+          highlight = 'Search',
+          highlight_grey='Comment'
+        },
+      })
+    end
+  }
+
+  -- ========== Surround (Surround text objects) ==========
+  use {
+    'kylechui/nvim-surround',
+    tag = "*",
+    config = function()
+      require("nvim-surround").setup({})
+    end
+  }
+
+  -- ========== Hop (Quick jump navigation) ==========
+  use {
+    'phaazon/hop.nvim',
+    branch = 'v2',
+    config = function()
+      require('hop').setup({
+        keys = 'etovxqpdygfblzhckisuran'
+      })
+    end
+  }
+
+  -- ========== Which-key (Keybinding hints) ==========
+  use {
+    'folke/which-key.nvim',
+    config = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+      require("which-key").setup({
+        preset = "helix",
+      })
+    end
+  }
+
+  -- ========== Plenary (Utility library) ==========
+  use 'nvim-lua/plenary.nvim'
+
+  -- ========== Alternative Editor Plugins (Uncomment to use) ==========
+
+  -- Neo-tree (Alternative file manager)
+  -- use {
+  --   'nvim-neo-tree/neo-tree.nvim',
+  --   branch = "v3.x",
+  --   requires = {
+  --     'nvim-lua/plenary.nvim',
+  --     'nvim-tree/nvim-web-devicons',
+  --     'MunifTanjim/nui.nvim',
+  --   },
+  --   config = function()
+  --     require("neo-tree").setup()
+  --   end
+  -- }
+
+  -- Trouble (Better diagnostics list)
+  -- use {
+  --   'folke/trouble.nvim',
+  --   requires = 'nvim-tree/nvim-web-devicons',
+  --   config = function()
+  --     require("trouble").setup()
+  --   end
+  -- }
+
+  -- Flash (Alternative to Hop)
+  -- use {
+  --   'folke/flash.nvim',
+  --   config = function()
+  --     require("flash").setup()
+  --   end
+  -- }
+
+  -- ========== Add your custom editor plugins here ==========
+end

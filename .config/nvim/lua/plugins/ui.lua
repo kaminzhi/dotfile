@@ -1,227 +1,204 @@
-return {
-	-- messages, cmdline and the popupmenu
-	{
-		"folke/noice.nvim",
-		opts = function(_, opts)
-			table.insert(opts.routes, {
-				filter = {
-					event = "notify",
-					find = "No information available",
-				},
-				opts = { skip = true },
-			})
-			local focused = true
-			vim.api.nvim_create_autocmd("FocusGained", {
-				callback = function()
-					focused = true
-				end,
-			})
-			vim.api.nvim_create_autocmd("FocusLost", {
-				callback = function()
-					focused = false
-				end,
-			})
-			table.insert(opts.routes, 1, {
-				filter = {
-					cond = function()
-						return not focused
-					end,
-				},
-				view = "notify_send",
-				opts = { stop = false },
-			})
+return function(use)
+  -- ========== Lualine (Statusbar) ==========
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'nvim-tree/nvim-web-devicons', opt = true },
+    config = function()
+      require('lualine').setup({
+        options = {
+          theme = 'tokyonight',
+          component_separators = { left = '|', right = '|'},
+          section_separators = { left = '', right = ''},
+          disabled_filetypes = {
+            statusline = {},
+            winbar = {},
+          },
+          ignore_focus = {},
+          always_divide_middle = true,
+          globalstatus = true,
+        },
+        sections = {
+          lualine_a = {'mode'},
+          lualine_b = {'branch', 'diff', 'diagnostics'},
+          lualine_c = {'filename'},
+          lualine_x = {{
+            function()
+              return require('what-im-listening').get_lualine_status()
+            end,
+          },'encoding', 'fileformat', 'filetype'},
+          lualine_y = {'progress'},
+          lualine_z = {'location'}
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {'filename'},
+          lualine_x = {'location'},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        tabline = {},
+        winbar = {},
+        inactive_winbar = {},
+        extensions = {}
+      })
+    end
+  }
 
-			opts.commands = {
-				all = {
-					-- options for the message history that you get with `:Noice`
-					view = "split",
-					opts = { enter = true, format = "details" },
-					filter = {},
-				},
-			}
+  -- ========== Bufferline (Tab bar) ==========
+  use {
+    'akinsho/bufferline.nvim',
+    tag = "*",
+    requires = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      require('bufferline').setup({
+        options = {
+          mode = "buffers",
+          numbers = "none",
+          close_command = "bdelete! %d",
+          right_mouse_command = "bdelete! %d",
+          left_mouse_command = "buffer %d",
+          middle_mouse_command = nil,
+          indicator = {
+            icon = '▎',
+            style = 'icon',
+          },
+          buffer_close_icon = '󰅖',
+          modified_icon = '●',
+          close_icon = '',
+          left_trunc_marker = '',
+          right_trunc_marker = '',
+          max_name_length = 18,
+          max_prefix_length = 15,
+          truncate_names = true,
+          tab_size = 18,
+          diagnostics = "nvim_lsp",
+          diagnostics_update_in_insert = false,
+          offsets = {
+            {
+              filetype = "NvimTree",
+              text = "File Explorer",
+              text_align = "center",
+              separator = true
+            }
+          },
+          color_icons = true,
+          show_buffer_icons = true,
+          show_buffer_close_icons = true,
+          show_close_icon = true,
+          show_tab_indicators = true,
+          show_duplicate_prefix = true,
+          persist_buffer_sort = true,
+          separator_style = "thin",
+          enforce_regular_tabs = false,
+          always_show_bufferline = true,
+        }
+      })
+    end
+  }
 
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "markdown",
-				callback = function(event)
-					vim.schedule(function()
-						require("noice.text.markdown").keys(event.buf)
-					end)
-				end,
-			})
+  -- ========== Indent Blankline ==========
+  use {
+    'lukas-reineke/indent-blankline.nvim',
+    config = function()
+      require("ibl").setup({
+        indent = {
+          char = "│",
+          tab_char = "│",
+        },
+        scope = {
+          enabled = true,
+          show_start = true,
+          show_end = false,
+        },
+        exclude = {
+          filetypes = {
+            "help",
+            "alpha",
+            "dashboard",
+            "neo-tree",
+            "Trouble",
+            "lazy",
+            "mason",
+            "notify",
+            "toggleterm",
+            "lazyterm",
+          },
+        },
+      })
+    end
+  }
 
-			opts.presets.lsp_doc_border = true
-		end,
-	},
+  -- ========== Notify (Notification manager) ==========
+  use {
+    'rcarriga/nvim-notify',
+    config = function()
+      local notify = require("notify")
+      notify.setup({
+        background_colour = "#000000",
+        fps = 30,
+        icons = {
+          DEBUG = "",
+          ERROR = "",
+          INFO = "",
+          TRACE = "✎",
+          WARN = ""
+        },
+        level = 2,
+        minimum_width = 50,
+        render = "default",
+        stages = "fade_in_slide_out",
+        timeout = 3000,
+        top_down = true
+      })
+      vim.notify = notify
+    end
+  }
 
-	{
-		"rcarriga/nvim-notify",
-		opts = {
-			timeout = 5000,
-		},
-	},
+    -- ========== Floaterm (Floating Terminal) ==========
+  use {
+    'voldikss/vim-floaterm',
+    config = function()
+      vim.g.floaterm_width = 0.8
+      vim.g.floaterm_height = 0.8
+      vim.g.floaterm_wintype = 'float'
+      vim.g.floaterm_position = 'center'
+      vim.g.floaterm_borderchars = '─│─│╭╮╯╰'
+      vim.g.floaterm_rootmarkers = {'.git', '.hg', '.svn', '.root'}
+    end
+  }
 
-	{
-		"snacks.nvim",
-		opts = {
-			scroll = { enabled = false },
-		},
-		keys = {},
-	},
+  -- ========== Web Devicons ==========
+  use 'nvim-tree/nvim-web-devicons'
 
-	-- buffer line
-	{
-		"akinsho/bufferline.nvim",
-		event = "VeryLazy",
-		keys = {
-			{ "<Tab>", "<Cmd>BufferLineCycleNext<CR>", desc = "Next tab" },
-			{ "<S-Tab>", "<Cmd>BufferLineCyclePrev<CR>", desc = "Prev tab" },
-		},
-		opts = {
-			options = {
-				mode = "tabs",
-				-- separator_style = "slant",
-				show_buffer_close_icons = false,
-				show_close_icon = false,
-			},
-		},
-	},
+  -- ========== Alternative UI Plugins (Uncomment to use) ==========
+  -- Alpha (Dashboard)
+  -- use {
+  --   'goolord/alpha-nvim',
+  --   requires = { 'nvim-tree/nvim-web-devicons' },
+  --   config = function()
+  --     require('alpha').setup(require('alpha.themes.startify').config)
+  --   end
+  -- }
 
-	-- filename
-	{
-		"b0o/incline.nvim",
-		dependencies = { "craftzdog/solarized-osaka.nvim" },
-		event = "BufReadPre",
-		priority = 1200,
-		config = function()
-			local colors = require("solarized-osaka.colors").setup()
-			require("incline").setup({
-				highlight = {
-					groups = {
-						InclineNormal = { guibg = colors.magenta500, guifg = colors.base04 },
-						InclineNormalNC = { guifg = colors.violet500, guibg = colors.base03 },
-					},
-				},
-				window = { margin = { vertical = 0, horizontal = 1 } },
-				hide = {
-					cursorline = true,
-				},
-				render = function(props)
-					local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-					if vim.bo[props.buf].modified then
-						filename = "[+] " .. filename
-					end
+  -- Noice (Better UI)
+  -- use {
+  --   'folke/noice.nvim',
+  --   requires = {
+  --     'MunifTanjim/nui.nvim',
+  --     'rcarriga/nvim-notify',
+  --   },
+  --   config = function()
+  --     require("noice").setup()
+  --   end
+  -- }
 
-					local icon, color = require("nvim-web-devicons").get_icon_color(filename)
-					return { { icon, guifg = color }, { " " }, { filename } }
-				end,
-			})
-		end,
-	},
+  -- Dressing (Better vim.ui)
+  -- use {
+  --   'stevearc/dressing.nvim',
+  --   config = function()
+  --     require('dressing').setup()
+  --   end
+  -- }
 
-	-- statusline
-	{
-		"nvim-lualine/lualine.nvim",
-		opts = function(_, opts)
-			local LazyVim = require("lazyvim.util")
-			opts.sections.lualine_c[4] = {
-				LazyVim.lualine.pretty_path({
-					length = 0,
-					relative = "cwd",
-					modified_hl = "MatchParen",
-					directory_hl = "",
-					filename_hl = "Bold",
-					modified_sign = "",
-					readonly_icon = " 󰌾 ",
-				}),
-			}
-		end,
-	},
-
-	{
-		"folke/zen-mode.nvim",
-		cmd = "ZenMode",
-		opts = {
-			plugins = {
-				gitsigns = true,
-				tmux = true,
-				kitty = { enabled = false, font = "+2" },
-			},
-		},
-		keys = { { "<leader>z", "<cmd>ZenMode<cr>", desc = "Zen Mode" } },
-	},
-
-	{
-		"folke/snacks.nvim",
-		---@type snacks.Config
-		opts = {
-			dashboard = {
-				preset = {
-					header = [[
-⠀⠀⠀⠀⠈⢧⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠔⠁⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⠟⢁⣞⣴⣟⢸⣿⣿⣿⣷⡀⠐⢸⡛⠛⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣮⠳⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣃⠀⡞⣾⣿⣿⣮⡻⣿⣿⠿⠃⢠⡛⡇⣠⡄⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢐⣿⣷⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⡀⢧⣿⣿⣿⣿⣿⣶⣶⡿⠁⣾⣷⣷⣿⠃⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠈⢿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠳⠶⣶⣤⣤⣀⣀⣀⠀⠀⠀⠀⠈⠳⠄⠙⠛⠿⠿⠿⠿⠛⣁⢀⣛⣫⠭⠶⠟⠀⠀⠸⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢠⡙⢟⡿⠀⠀⠀⠀⢀⣤⣤⡀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠛⠛⠛⠛⠿⠿⠸⠿⠿⠟⠛⠛⠛⠋⠛⠉⠈⠉⠀⠀⠀⠀⠐⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢀⢑⡤⠀⠀⠀⠀⢀⡿⢁⡝⣷⡀⠀⠀⠀⠀⠀⢀⡴⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⡿⠦⠀⠀⣀⣴⣶⣤⣤⡀⠀⠀⠀
-⠀⠀⠀⠀⣿⣿⣷⠀⠀⠀⠀⣼⣇⣾⠃⢸⣇⠀⠀⢀⠐⣀⣡⡴⠚⠀⠂⠠⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⠟⠋⠁⠀⠀⠀⠀⠻⠁⠀⠀⣤⣶⡬⢹⣿⣿⠿⢛⠀⠀⠀
-⠀⠀⣀⠀⠈⠛⠿⠀⠄⠀⠀⢿⡿⣿⠀⠀⣿⠀⠠⣿⣿⣿⣶⣤⣚⣻⠧⣄⣒⣰⣤⣦⡀⠠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠩⠑⠲⠾⠟⠋⠡⣶⣿⣆⠀⠀
-⢀⣾⡿⣡⢀⡥⠂⠁⠀⠀⠀⠈⢿⡘⠀⠸⣿⣄⣤⣉⠛⢿⣿⣿⣿⣿⣿⣷⣶⣭⡭⠥⢤⣶⣿⡦⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⠎⢧
-⢼⠟⠹⠁⡎⢀⡀⠀⠀⠀⠀⠀⠀⠻⣦⣄⣸⢹⣿⣿⣿⣷⣬⢉⣩⣭⣭⣤⣤⣄⡀⠀⢀⠀⠀⣶⣶⣶⡄⣶⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠨
-⣯⠀⠆⠲⡘⣜⢿⡆⠀⠀⠀⠀⠀⠀⠹⢯⣽⡸⣿⣿⣿⣿⣿⠔⣿⣿⣿⣿⣿⣿⣿⣦⡀⢀⣾⣿⣿⣿⣷⠻⠇⣇⢀⣴⣶⡿⣹⠃⢀⢀⡄⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⣀⣤⣀
-⣿⡟⢸⠀⠀⠈⠣⡙⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⡇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠛⠛⠛⠛⠘⠿⠎⣿⣿⣏⡞⣌⠈⢸⣿⡇⠴⣰⣿⣾⣿⠈⠼⠁⢸⣿⣷⡶⢖⣤
-⣿⡇⡿⠀⠀⠀⠀⠈⠲⣝⠢⣄⠀⠀⠈⠇⢸⠀⢿⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣄⠀⠀⣠⣴⣿⣿⡿⡜⣼⣿⡀⠘⣿⡇⡆⢹⣿⣿⣿⡆⠀⠀⠈⣉⣤⣶⣿⣿
-⠉⠁⠀⢠⣴⣶⡀⢀⠀⠀⠁⢬⢡⠀⣤⢠⡘⠄⠸⣿⣿⣿⣿⣿⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⣿⣿⣿⣿⢳⠁⣿⣿⣷⢀⣀⡁⡇⢸⣿⣿⣿⠃⠀⠴⠻⣿⠿⣛⣭⣵
-⣶⣇⢀⡿⣹⡟⣵⣻⣧⠀⠀⣦⠈⠀⡏⣾⣿⡄⠀⡈⠻⣿⣿⣿⡇⣿⣿⣿⣿⡿⠛⢋⣉⣉⣀⣉⠉⠋⣉⣄⣹⣿⣏⠃⠂⠛⢿⣿⡆⣿⢃⣇⢻⣯⣉⣥⣾⣇⢺⣦⣘⠿⠛⠉⢀
-⣿⡿⢨⣿⣿⢸⡟⣼⣿⠀⠀⣿⠀⣀⠈⣿⣿⣿⡀⠇⠀⠈⠻⢿⣷⢸⣿⣿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⢹⣿⡎⠀⠀⠀⣼⣿⣷⠸⡆⢿⣆⢻⣿⣿⣿⡿⢸⣿⢸⣿⡷⠰⣿
-⡟⠁⠘⢿⡇⢸⣾⣿⠹⠀⠀⡏⠀⣿⣆⢻⣿⣿⣷⠀⢠⠀⠀⠀⠙⢧⣿⣿⣿⣿⣿⣿⣶⣭⣉⣁⠀⣀⣠⣶⣿⡟⡺⢀⠀⠐⠿⣿⣿⣧⢹⡌⢿⣆⢻⣿⣿⡇⣾⡿⢸⣿⠇⣲⣄
-]],
-					keys = {
-						{
-							icon = " ",
-							key = "f",
-							desc = "Find File",
-							action = ";f",
-						},
-						{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-						{
-							icon = " ",
-							key = "g",
-							desc = "Find Text",
-							action = ";r",
-						},
-						{
-							icon = " ",
-							key = "r",
-							desc = "Recent Files",
-							action = ":lua Snacks.dashboard.pick('oldfiles')",
-						},
-						{
-							icon = " ",
-							key = "c",
-							desc = "Config",
-							action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
-						},
-						{ icon = " ", key = "s", desc = "Restore Session", section = "session" },
-						{
-							icon = "󰒲 ",
-							key = "L",
-							desc = "Lazy",
-							action = ":Lazy",
-							enabled = package.loaded.lazy ~= nil,
-						},
-						{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
-					},
-				},
-			},
-		},
-		keys = {
-			{
-				"<leader>gg",
-				function()
-					Snacks.lazygit()
-				end,
-				desc = "Lazygit",
-			},
-		},
-	},
-}
+end
