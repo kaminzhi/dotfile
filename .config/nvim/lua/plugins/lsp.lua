@@ -23,7 +23,7 @@ return function(use)
       require("mason-lspconfig").setup({
         ensure_installed = {
           "lua_ls",
-          "ts_ls",
+          "ts_ls", 
           "pyright",
           "html",
           "cssls",
@@ -31,16 +31,8 @@ return function(use)
         },
         automatic_installation = true,
       })
-    end
-  }
- 
-  -- ========== LSP Config ==========
-  use {
-    'neovim/nvim-lspconfig',
-    after = 'mason-lspconfig.nvim',
-    config = function()
-      local lspconfig = require('lspconfig')
 
+      -- ========== LSP Config using vim.lsp.config ==========
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
       if has_cmp then
@@ -61,7 +53,7 @@ return function(use)
 
       for _, name in ipairs(servers) do
         if name == "lua_ls" then
-          lspconfig[name].setup({
+          vim.lsp.config[name] = {
             capabilities = capabilities,
             settings = {
               Lua = {
@@ -69,9 +61,9 @@ return function(use)
                 workspace = { library = vim.api.nvim_get_runtime_file("", true), checkThirdParty = false },
               }
             }
-          })
+          }
         else
-          lspconfig[name].setup({ capabilities = capabilities })
+          vim.lsp.config[name] = { capabilities = capabilities }
         end
       end
     end

@@ -5,7 +5,7 @@ return function(use)
     config = function()
       require("tokyonight").setup({
         style = "moon", -- Available: storm, moon, night, day
-        transparent = false,
+        transparent = true,
         terminal_colors = true,
         styles = {
           comments = { italic = true },

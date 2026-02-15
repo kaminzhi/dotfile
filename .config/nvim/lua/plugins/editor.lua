@@ -18,7 +18,7 @@ return function(use)
     'kaminzhi/oxicord.nvim',
     config = function()
       require('oxicord').setup({
-        binary = "path/to/oxicord", -- path to oxicord
+        binary = "/Users/kamin/Development/oxicord/target/release/oxicord",
         keys = "<leader>dc"    -- Keybind to open the floating terminal
       })
     end
