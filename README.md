@@ -1,5 +1,8 @@
 # Dev Dotfiles
 
+> [!NOTE] 
+> This branch is made for macOS.
+
 ## Contents
 
 - [fish config](./.config/fish/)
