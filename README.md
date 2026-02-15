@@ -19,18 +19,19 @@
 - [LSP](https://github.com/neovim/nvim-lspconfig) - Language server protocol
 - [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Syntax highlighting
 - [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) - Autocompletion
+- [Apple Music](https://github.com/kaminzhi/apple-music.nvim) - Apple Music Search Controller
+- [What i'm listening](https://github.com/kaminzhi/what-im-listening.nvim) - Media Status & Controller
+- [Oxicord](https://github.com/kaminzhi/oxicord.nvim) - Discord Message Viewer
+
 
 ## Shell setup
 
 - [Kitty terminal](https://github.com/kovidgoyal/kitty) - A Linux terminal
-- ~~[colorls](https://github.com/athityakumar/colorls)~~ -- Change to Eza
 - [Eza](https://github.com/eza-community/eza) - Just like ls, but it's colorful
 - [Fish shell](https://fishshell.com/) - Replace bash shell
 - [Fisher](https://github.com/jorgebucaran/fisher) - Plugin manager
-- [Tide](https://github.com/IlanCosman/tide) - Shell theme
+- [Catppuccin](https://github.com/catppuccin/fish) - Soothing pastel theme 
 - [Nerd fonts(Hack)](https://github.com/ryanoasis/nerd-fonts) - Terminal fonts
 - [fzf](https://github.com/PatrickF1/fzf.fish) - Interactive filtering
-
-## Reference sources
-
-- [gpakosz-.tmux](https://github.com/gpakosz/.tmux)
+- [nvm](https://github.com/jorgebucaran/nvm.fish) - Node.js version manager
+- [Transient](https://github.com/zzhaolei/transient.fish) - Transient Prompt 
