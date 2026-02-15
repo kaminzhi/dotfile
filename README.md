@@ -3,6 +3,8 @@
 > [!NOTE] 
 > This branch is made for macOS.
 
+![screenshot](./.image/screenshot.png)
+
 ## Contents
 
 - [fish config](./.config/fish/)
