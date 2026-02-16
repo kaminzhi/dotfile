@@ -25,6 +25,7 @@ end
 
 # --- Aliases ---
 alias ls "eza -S -l --icons"
+alias cz='uvx --from commitizen cz'
 
 # --- Main Prompt ---
 function fish_prompt
